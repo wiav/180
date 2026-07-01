@@ -367,6 +367,8 @@ body {
 .habit-icon-wrapper svg {
   width: 20px;
   height: 20px;
+  min-width: 20px;
+  min-height: 20px;
   flex-shrink: 0;
 }
 
@@ -423,7 +425,10 @@ body {
 .checkbox-neon svg {
   width: 14px;
   height: 14px;
+  min-width: 14px;
+  min-height: 14px;
   stroke-width: 3.5px;
+  flex-shrink: 0;
 }
 
 .habit-card.checked .checkbox-neon {
