@@ -1,0 +1,17 @@
+{
+  "name": "Daily Win OS - Alto Rendimiento",
+  "short_name": "Daily Win",
+  "description": "Ecosistema estricto de hábitos, neurociencia y alto rendimiento.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ]
+}

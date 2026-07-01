@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>180 - Alto Rendimiento</title>
+  <meta name="description" content="Ecosistema estricto de hábitos, neurociencia y alto rendimiento.">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-info">
+        <h1 class="app-title">180</h1>
+        <p class="current-date-display" id="current-date-text">Cargando fecha...</p>
+      </div>
+      <button class="icon-btn" id="open-settings-btn" title="Configurar metas">
+        <i data-lucide="settings"></i>
+      </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      
+      <!-- TAB 1: DASHBOARD HOY -->
+      <section id="tab-hoy" class="tab-content active">
+        <!-- Status Ring Widget -->
+        <div class="status-card" id="status-card">
+          <div class="status-ring-container">
+            <svg class="status-ring-svg" viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="42"></circle>
+              <circle class="ring-progress" id="status-ring-progress" cx="50" cy="50" r="42"></circle>
+            </svg>
+            <div class="status-ring-text">
+              <span id="score-fraction">0/7</span>
+              <span class="score-lbl">Misiones</span>
+            </div>
+          </div>
+          <div class="status-details">
+            <div class="status-badge" id="status-badge">MAINTAIN</div>
+            <p class="status-motivation" id="status-motivation">Comienza tus misiones para ganar el día.</p>
+          </div>
+        </div>
+
+        <!-- Section Title -->
+        <div class="section-header">
+          <h2>Misiones Diarias</h2>
+          <span class="badge-foco">Regla del 80%</span>
+        </div>
+
+        <!-- Habits Checklist -->
+        <div class="checklist-container" id="checklist-container">
+          <!-- Dynamically generated checklist cards -->
+        </div>
+
+        <!-- Somatic Form -->
+        <div class="section-header top-spacing">
+          <h2>Diario de Rendimiento</h2>
+          <span class="badge-prevencion">Estado Físico</span>
+        </div>
+
+        <form class="somatic-form" id="somatic-form" onsubmit="event.preventDefault();">
+          <div class="form-group">
+            <div class="form-label-row">
+              <label for="energy-slider"><i data-lucide="zap"></i> Nivel de Energía</label>
+              <span class="slider-value" id="energy-val">5</span>
+            </div>
+            <input type="range" id="energy-slider" min="1" max="10" value="5" class="app-slider">
+            <div class="slider-labels">
+              <span>1</span>
+              <span>10</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label-row">
+              <label for="pain-slider"><i data-lucide="shield-alert"></i> Nivel de Estrés / Cansancio</label>
+              <span class="slider-value" id="pain-val">1</span>
+            </div>
+            <input type="range" id="pain-slider" min="1" max="10" value="1" class="app-slider">
+            <div class="slider-labels">
+              <span>1</span>
+              <span>10</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="medical-notes"><i data-lucide="book-open"></i> Resumen del Día</label>
+            <textarea id="medical-notes" class="app-textarea" placeholder="Notas sobre tu día, productividad, sueño o alimentación..."></textarea>
+          </div>
+
+          <button type="button" class="submit-btn" id="save-somatic-btn">
+            <i data-lucide="check-circle-2"></i> Guardar Estado de Rendimiento
+          </button>
+        </form>
+      </section>
+
+      <!-- TAB 2: PROGRESO -->
+      <section id="tab-progreso" class="tab-content">
+        <!-- Calendar Header -->
+        <div class="calendar-header">
+          <button class="icon-btn small" id="prev-month-btn">
+            <i data-lucide="chevron-left"></i>
+          </button>
+          <h2 id="calendar-month-title">Julio 2026</h2>
+          <button class="icon-btn small" id="next-month-btn">
+            <i data-lucide="chevron-right"></i>
+          </button>
+        </div>
+
+        <!-- Calendar Heatmap -->
+        <div class="calendar-wrapper">
+          <div class="calendar-weekdays">
+            <div>Lu</div><div>Ma</div><div>Mi</div><div>Ju</div><div>Vi</div><div>Sá</div><div>Do</div>
+          </div>
+          <div class="calendar-grid" id="calendar-grid">
+            <!-- Dynamically populated monthly squares -->
+          </div>
+        </div>
+
+        <!-- 180 Days Transformation Progress Card -->
+        <div class="stats-card transformation-card" style="margin-bottom: 16px;">
+          <h3 class="stats-card-title"><i data-lucide="history"></i> Reto de 180 Días</h3>
+          <div class="stats-row">
+            <div class="stat-box">
+              <span class="stat-number" id="trans-days-logged">0</span>
+              <span class="stat-desc">Días Transcurridos</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-number" id="trans-days-left">180</span>
+              <span class="stat-desc">Días Restantes</span>
+            </div>
+          </div>
+          <div class="consistency-progress-bar-container">
+            <div class="consistency-progress-bar" id="trans-progress-bar" style="width: 0%"></div>
+          </div>
+          <p class="stats-message" id="trans-message" style="color: var(--color-primary);">Cargando progreso de la transformación...</p>
+        </div>
+
+        <!-- Consistency Stats Card -->
+        <div class="stats-card">
+          <h3 class="stats-card-title"><i data-lucide="trending-up"></i> Consistencia del Mes</h3>
+          <div class="stats-row">
+            <div class="stat-box">
+              <span class="stat-number" id="stats-total-wins">0</span>
+              <span class="stat-desc">Días Ganados</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-number" id="stats-percentage">0%</span>
+              <span class="stat-desc">Consistencia</span>
+            </div>
+          </div>
+          <div class="consistency-progress-bar-container">
+            <div class="consistency-progress-bar" id="consistency-progress-bar" style="width: 0%"></div>
+          </div>
+          <p class="stats-message" id="stats-message">Mantén una consistencia sobre el 80% para asegurar el éxito.</p>
+        </div>
+
+        <!-- Export Performance Section -->
+        <div class="export-section">
+          <h3><i data-lucide="folder-archive"></i> Historial de Rendimiento</h3>
+          <p class="export-desc">Exporta tu historial de hábitos y estado físico en formato PDF o Excel.</p>
+          <div class="export-buttons">
+            <button class="export-btn pdf" id="export-pdf-btn">
+              <i data-lucide="file-text"></i> Exportar PDF
+            </button>
+            <button class="export-btn csv" id="export-csv-btn">
+              <i data-lucide="file-spreadsheet"></i> Exportar CSV
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="app-nav">
+      <button class="nav-item active" data-target="tab-hoy">
+        <i data-lucide="check-square"></i>
+        <span>Hoy</span>
+      </button>
+      <button class="nav-item" data-target="tab-progreso">
+        <i data-lucide="calendar"></i>
+        <span>Progreso</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- MODAL: AJUSTAR CONFIGURACIÓN DE METAS -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Ajustar Metas Diarias</h2>
+        <button class="icon-btn small" id="close-settings-btn">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form class="modal-form" id="settings-form">
+        <div class="modal-form-grid">
+          <div class="form-group">
+            <label for="goal-sleep-hours">Horas de Sueño</label>
+            <input type="number" id="goal-sleep-hours" min="1" max="24" step="0.5" class="app-input" value="7.5">
+          </div>
+          <div class="form-group">
+            <label for="goal-wake-time">Hora Despertar</label>
+            <input type="text" id="goal-wake-time" class="app-input" value="10:00 AM">
+          </div>
+          <div class="form-group">
+            <label for="goal-calories">Kcal Diarias</label>
+            <input type="number" id="goal-calories" min="1000" max="6000" class="app-input" value="2200">
+          </div>
+          <div class="form-group">
+            <label for="goal-protein">Proteína (g)</label>
+            <input type="number" id="goal-protein" min="50" max="300" class="app-input" value="170">
+          </div>
+          <div class="form-group">
+            <label for="goal-water">Litros Agua</label>
+            <input type="number" id="goal-water" min="1.0" max="10.0" step="0.05" class="app-input" value="3.15">
+          </div>
+          <div class="form-group">
+            <label for="goal-social-media">Redes (minutos)</label>
+            <input type="number" id="goal-social-media" min="5" max="300" class="app-input" value="30">
+          </div>
+          <div class="form-group">
+            <label for="goal-study-time">Estudio (minutos)</label>
+            <input type="number" id="goal-study-time" min="5" max="300" class="app-input" value="30">
+          </div>
+          <div class="form-group">
+            <label for="goal-work-time">Deep Work (horas)</label>
+            <input type="number" id="goal-work-time" min="0.5" max="12" step="0.5" class="app-input" value="1">
+          </div>
+        </div>
+        <button type="submit" class="submit-btn" id="save-settings-btn-action">
+          Guardar Configuración
+        </button>
+      </form>
+      
+      <div class="backup-section">
+        <h3><i data-lucide="database"></i> Copia de Seguridad</h3>
+        <p class="backup-desc">Exporta o restaura tus datos manualmente para proteger tu progreso.</p>
+        <div class="backup-buttons">
+          <button class="backup-btn" id="export-backup-btn">
+            <i data-lucide="download"></i> Exportar Backup (JSON)
+          </button>
+          <button class="backup-btn" id="import-backup-btn">
+            <i data-lucide="upload"></i> Importar Backup (JSON)
+          </button>
+          <input type="file" id="import-file-input" accept=".json" style="display: none;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: HISTORIAL DEL DÍA (CALENDARIO) -->
+  <div class="modal-overlay" id="history-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="history-modal-title">Detalle del Día</h2>
+        <button class="icon-btn small" id="close-history-btn">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="history-modal-body">
+        <div class="history-score-display" id="history-score-display">
+          <span class="status-badge" id="history-status-badge">WIN</span>
+          <p id="history-score-text">6 de 7 misiones completadas</p>
+        </div>
+
+        <div class="history-section">
+          <h3>Misiones</h3>
+          <ul class="history-list" id="history-missions-list">
+            <!-- Populated via JS -->
+          </ul>
+        </div>
+
+        <div class="history-section">
+          <h3>Estado de Rendimiento</h3>
+          <div class="history-somatic-grid">
+            <div class="somatic-stat">
+              <span class="label">Energía</span>
+              <span class="val" id="history-somatic-energy">-</span>
+            </div>
+            <div class="somatic-stat">
+              <span class="label">Estrés</span>
+              <span class="val" id="history-somatic-pain">-</span>
+            </div>
+          </div>
+          <div class="somatic-notes-box">
+            <span class="label">Resumen del Día:</span>
+            <p id="history-somatic-notes">-</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- jsPDF & jsPDF AutoTable CDN for PDF Exports -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
+  
+  <!-- Main Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
