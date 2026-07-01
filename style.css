@@ -351,6 +351,13 @@ body {
   justify-content: center;
   color: var(--text-muted);
   transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.habit-icon-wrapper svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .habit-info {
@@ -861,7 +868,7 @@ body {
 
 /* Bottom Tab Bar Navigation */
 .app-nav {
-  position: absolute;
+  position: sticky;
   bottom: 0;
   left: 0;
   right: 0;
