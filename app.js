@@ -562,7 +562,8 @@ function initTodayLog(dateKey) {
         status: 'pending', // 'pending', 'accepted', 'rejected'
         rollsLeft: 1,
         completed: false
-      }
+      },
+      dayStatus: 'not_started'
     };
     saveLogsToStorage();
   } else {
@@ -577,6 +578,16 @@ function initTodayLog(dateKey) {
     });
     if (!appLogs[dateKey].somatic) {
       appLogs[dateKey].somatic = { energy: 5, digestion: 'GOOD', pain: 1, notes: '' };
+    }
+    if (!appLogs[dateKey].dayStatus) {
+      // Si el log ya tenía somatic notes o pain distinto de 1, asumimos que fue cerrado
+      const som = appLogs[dateKey].somatic;
+      if (som.notes !== '' || som.pain !== 1 || appLogs[dateKey].topTasks) {
+        appLogs[dateKey].dayStatus = 'closed';
+      } else {
+        // En caso contrario (y si no estamos en el día de hoy exacto), asumimos closed también
+        appLogs[dateKey].dayStatus = (dateKey === getLogicalDate()) ? 'in_progress' : 'closed';
+      }
     }
   }
 }
@@ -757,6 +768,108 @@ function renderTopTasks(dateKey) {
 }
 
 // Renderiza el checklist de misiones
+// Renderiza la vista correcta en la pestaña Hoy basada en dayStatus
+function renderTodayTab(dateKey) {
+  const log = appLogs[dateKey];
+  if (!log) return;
+  
+  const vNotStarted = document.getElementById('view-not-started');
+  const vInProgress = document.getElementById('view-in-progress');
+  const vDayClosed = document.getElementById('view-day-closed');
+  
+  if (!vNotStarted || !vInProgress || !vDayClosed) return;
+  
+  // Auto-cierre implicito si el día es del pasado y no estaba cerrado, se renderiza como closed si hay datos.
+  let status = log.dayStatus || 'in_progress';
+  
+  if (status !== 'closed' && dateKey !== getLogicalDate()) {
+    status = 'closed';
+    log.dayStatus = 'closed';
+    saveLogsToStorage();
+  }
+  
+  if (status === 'not_started') {
+    vNotStarted.style.display = 'block';
+    vInProgress.style.display = 'none';
+    vDayClosed.style.display = 'none';
+  } else if (status === 'in_progress') {
+    vNotStarted.style.display = 'none';
+    vInProgress.style.display = 'block';
+    vDayClosed.style.display = 'none';
+    
+    // Renderizar componentes normales
+    renderChecklist(dateKey);
+    updateScoreWidget(dateKey);
+  } else if (status === 'closed') {
+    vNotStarted.style.display = 'none';
+    vInProgress.style.display = 'none';
+    vDayClosed.style.display = 'block';
+    
+    renderClosedSummary(dateKey);
+  }
+}
+
+// Renderiza el dashboard resumen de cuando cierras el día
+function renderClosedSummary(dateKey) {
+  const log = appLogs[dateKey];
+  if (!log) return;
+  
+  const scoreResult = calculateScore(dateKey);
+  
+  const badge = document.getElementById('closed-badge');
+  const scoreVal = document.getElementById('closed-score');
+  
+  if (scoreResult.isExtraWin) {
+    badge.textContent = '🌟 EXTRA WIN';
+    badge.style.backgroundColor = 'rgba(251, 191, 36, 0.1)';
+    badge.style.color = '#F59E0B';
+  } else if (scoreResult.status === 'WIN') {
+    badge.textContent = '🟢 WIN DAY';
+    badge.style.backgroundColor = 'var(--color-win-neon)';
+    badge.style.color = 'var(--color-win)';
+  } else if (scoreResult.status === 'MAINTAIN') {
+    badge.textContent = '🟡 MAINTAIN';
+    badge.style.backgroundColor = 'var(--color-maintain-neon)';
+    badge.style.color = 'var(--color-maintain)';
+  } else {
+    badge.textContent = '🔴 LOSE DAY';
+    badge.style.backgroundColor = 'var(--color-fail-neon)';
+    badge.style.color = 'var(--color-fail)';
+  }
+  
+  scoreVal.textContent = `${scoreResult.completed}/${scoreResult.total}`;
+  
+  const som = log.somatic || {};
+  document.getElementById('closed-energy-val').textContent = som.energy || '--';
+  document.getElementById('closed-stress-val').textContent = som.pain || '--';
+  
+  // Tomorrow preview
+  const list = document.getElementById('closed-tomorrow-tasks-list');
+  const widget = document.getElementById('closed-tomorrow-tasks-widget');
+  const tomorrowKey = getTomorrowKey(dateKey);
+  const tmLog = appLogs[tomorrowKey];
+  
+  if (tmLog && tmLog.topTasks && tmLog.topTasks.length > 0) {
+    const validTasks = tmLog.topTasks.filter(t => t.trim() !== '');
+    if (validTasks.length > 0) {
+      widget.style.display = 'block';
+      list.innerHTML = validTasks.map(t => `
+        <div class="mission-card" style="padding: 12px; border-radius: 8px;">
+          <div class="mission-header" style="justify-content: flex-start; gap: 12px;">
+            <i data-lucide="target" style="width:18px; color: var(--color-primary);"></i>
+            <span style="font-weight: 500;">${t}</span>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    } else {
+      widget.style.display = 'none';
+    }
+  } else {
+    widget.style.display = 'none';
+  }
+}
+
 function renderChecklist(dateKey) {
   renderTopTasks(dateKey);
   
@@ -1135,6 +1248,16 @@ function saveSomaticLog(dateKey) {
     // Close modal
     const modal = document.getElementById('end-day-modal');
     if (modal) modal.classList.remove('active');
+    
+    // Cambiar estado a cerrado y actualizar
+    log.dayStatus = 'closed';
+    saveLogsToStorage();
+    
+    if (dateKey === currentViewDateKey) {
+      renderTodayTab(dateKey);
+    }
+    renderCalendar();
+    update180TransformationStats();
   }, 1200);
 }
 
@@ -1436,8 +1559,7 @@ function openHistoryModal(dateKey) {
       
       // Re-render dashboard for this specific date
       document.getElementById('current-date-text').textContent = formatReadableDate(dateKey) + ' (Edit)';
-      renderChecklist(dateKey);
-      updateScoreWidget(dateKey);
+      renderTodayTab(dateKey);
       fillSomaticForm(dateKey);
       
       // Close modal
@@ -2430,6 +2552,28 @@ document.getElementById('crash-log-form')?.addEventListener('submit', (e) => {
   }
 });
 
+// Day Flow Listeners
+document.getElementById('start-day-btn')?.addEventListener('click', () => {
+  const log = appLogs[currentViewDateKey];
+  if (log && log.dayStatus === 'not_started') {
+    log.dayStatus = 'in_progress';
+    saveLogsToStorage();
+    renderTodayTab(currentViewDateKey);
+    if (navigator.vibrate) navigator.vibrate([20, 50, 20]);
+  }
+});
+
+document.getElementById('reopen-day-btn')?.addEventListener('click', () => {
+  const log = appLogs[currentViewDateKey];
+  if (log && log.dayStatus === 'closed') {
+    log.dayStatus = 'in_progress';
+    saveLogsToStorage();
+    renderTodayTab(currentViewDateKey);
+  }
+});
+
+document.getElementById('open-quick-journal-btn-closed')?.addEventListener('click', openQuickJournalModal);
+
 // -------------------------------------------------------------
 // 14. INICIALIZACIÓN E EVENTOS DE LA APP
 // -------------------------------------------------------------
@@ -2459,8 +2603,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   // 3. Pintar vista inicial
-  renderChecklist(currentViewDateKey);
-  updateScoreWidget(currentViewDateKey);
+  renderTodayTab(currentViewDateKey);
   fillSomaticForm(currentViewDateKey);
   update180TransformationStats();
   
@@ -2483,8 +2626,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentViewDateKey !== today) {
           currentViewDateKey = today;
           document.getElementById('current-date-text').textContent = formatReadableDate(today);
-          renderChecklist(today);
-          updateScoreWidget(today);
+          renderTodayTab(today);
           fillSomaticForm(today);
         }
       }
