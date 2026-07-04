@@ -25,6 +25,7 @@
     <header class="app-header">
       <div class="header-info">
         <h1 class="app-title">180</h1>
+        <p class="app-slogan" style="font-size: 0.65rem; color: var(--color-primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: -2px; margin-bottom: 4px;" data-i18n="app_slogan">1 Objetivo, 8 Metas, 0 Excusas</p>
         <p class="current-date-display" id="current-date-text">Cargando fecha...</p>
       </div>
       <button class="icon-btn" id="open-settings-btn" title="Configurar metas">
@@ -37,28 +38,32 @@
       
       <!-- TAB 1: DASHBOARD HOY -->
       <section id="tab-hoy" class="tab-content active">
-        <!-- Status Ring Widget -->
-        <div class="status-card" id="status-card">
-          <div class="status-ring-container">
-            <svg class="status-ring-svg" viewBox="0 0 100 100">
-              <circle class="ring-bg" cx="50" cy="50" r="42"></circle>
-              <circle class="ring-progress" id="status-ring-progress" cx="50" cy="50" r="42"></circle>
-            </svg>
-            <div class="status-ring-text">
-              <span id="score-fraction">0/7</span>
-              <span class="score-lbl">Misiones</span>
-            </div>
-          </div>
-          <div class="status-details">
+        <!-- Compact Sticky Score Header -->
+        <div class="sticky-score-header" id="status-card">
+          <div class="sticky-score-left">
             <div class="status-badge" id="status-badge">MAINTAIN</div>
-            <p class="status-motivation" id="status-motivation">Comienza tus misiones para ganar el día.</p>
+            <span class="sticky-score-text" id="score-fraction">0/7</span>
+          </div>
+          <div class="sticky-score-progress">
+            <div class="sticky-progress-bar" id="sticky-progress-fill"></div>
+          </div>
+        </div>
+
+        <!-- Top 3 Tasks Widget (Injected dynamically if exist) -->
+        <div id="top-tasks-widget" style="display: none;" class="top-tasks-container">
+          <div class="section-header">
+            <h2 data-i18n="top_tasks_title">Top 3 Tareas</h2>
+            <span class="badge-foco" data-i18n="top_tasks_badge">Requisito WIN</span>
+          </div>
+          <div class="checklist-container" id="top-tasks-list">
+            <!-- Dynamically generated Top 3 Tasks -->
           </div>
         </div>
 
         <!-- Section Title -->
         <div class="section-header">
-          <h2>Misiones Diarias</h2>
-          <span class="badge-foco">Regla del 80%</span>
+          <h2 data-i18n="daily_missions_title">Misiones Diarias</h2>
+          <span class="badge-foco" data-i18n="rule_80_badge">Regla del 80%</span>
         </div>
 
         <!-- Habits Checklist -->
@@ -66,46 +71,20 @@
           <!-- Dynamically generated checklist cards -->
         </div>
 
-        <!-- Somatic Form -->
-        <div class="section-header top-spacing">
-          <h2>Diario de Rendimiento</h2>
-          <span class="badge-prevencion">Estado Físico</span>
-        </div>
-
-        <form class="somatic-form" id="somatic-form" onsubmit="event.preventDefault();">
-          <div class="form-group">
-            <div class="form-label-row">
-              <label for="energy-slider"><i data-lucide="zap"></i> Nivel de Energía</label>
-              <span class="slider-value" id="energy-val">5</span>
-            </div>
-            <input type="range" id="energy-slider" min="1" max="10" value="5" class="app-slider">
-            <div class="slider-labels">
-              <span>1</span>
-              <span>10</span>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <div class="form-label-row">
-              <label for="pain-slider"><i data-lucide="shield-alert"></i> Nivel de Estrés / Cansancio</label>
-              <span class="slider-value" id="pain-val">1</span>
-            </div>
-            <input type="range" id="pain-slider" min="1" max="10" value="1" class="app-slider">
-            <div class="slider-labels">
-              <span>1</span>
-              <span>10</span>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="medical-notes"><i data-lucide="book-open"></i> Resumen del Día</label>
-            <textarea id="medical-notes" class="app-textarea" placeholder="Notas sobre tu día, productividad, sueño o alimentación..."></textarea>
-          </div>
-
-          <button type="button" class="submit-btn" id="save-somatic-btn">
-            <i data-lucide="check-circle-2"></i> Guardar Estado de Rendimiento
+        <!-- Bottom Action Bar -->
+        <div class="action-bar" style="margin-top: 24px;">
+          <button type="button" class="submit-btn main-action-btn" id="open-end-day-modal-btn" data-i18n="open_close_day">
+            <i data-lucide="moon"></i> Cerrar Día
           </button>
-        </form>
+          <div class="action-bar-secondary">
+            <button type="button" class="icon-btn square-btn" id="open-bonus-mission-btn" title="Misión Bonus Aleatoria">
+              <i data-lucide="dices"></i>
+            </button>
+            <button type="button" class="icon-btn square-btn" id="open-quick-journal-btn" title="Diario Rápido">
+              <i data-lucide="book-open"></i>
+            </button>
+          </div>
+        </div>
       </section>
 
       <!-- TAB 2: PROGRESO -->
@@ -133,15 +112,15 @@
 
         <!-- 180 Days Transformation Progress Card -->
         <div class="stats-card transformation-card" style="margin-bottom: 16px;">
-          <h3 class="stats-card-title"><i data-lucide="history"></i> Reto de 180 Días</h3>
+          <h3 class="stats-card-title"><i data-lucide="history"></i> <span data-i18n="challenge_180">Reto de 180 Días</span></h3>
           <div class="stats-row">
             <div class="stat-box">
               <span class="stat-number" id="trans-days-logged">0</span>
-              <span class="stat-desc">Días Transcurridos</span>
+              <span class="stat-desc" data-i18n="days_logged">Días Transcurridos</span>
             </div>
             <div class="stat-box">
               <span class="stat-number" id="trans-days-left">180</span>
-              <span class="stat-desc">Días Restantes</span>
+              <span class="stat-desc" data-i18n="days_left">Días Restantes</span>
             </div>
           </div>
           <div class="consistency-progress-bar-container">
@@ -152,15 +131,15 @@
 
         <!-- Consistency Stats Card -->
         <div class="stats-card">
-          <h3 class="stats-card-title"><i data-lucide="trending-up"></i> Consistencia del Mes</h3>
+          <h3 class="stats-card-title"><i data-lucide="trending-up"></i> <span data-i18n="consistency_month">Consistencia del Mes</span></h3>
           <div class="stats-row">
             <div class="stat-box">
               <span class="stat-number" id="stats-total-wins">0</span>
-              <span class="stat-desc">Días Ganados</span>
+              <span class="stat-desc" data-i18n="days_won">Días Ganados</span>
             </div>
             <div class="stat-box">
               <span class="stat-number" id="stats-percentage">0%</span>
-              <span class="stat-desc">Consistencia</span>
+              <span class="stat-desc" data-i18n="consistency_pct">Consistencia</span>
             </div>
           </div>
           <div class="consistency-progress-bar-container">
@@ -171,15 +150,110 @@
 
         <!-- Export Performance Section -->
         <div class="export-section">
-          <h3><i data-lucide="folder-archive"></i> Historial de Rendimiento</h3>
-          <p class="export-desc">Exporta tu historial de hábitos y estado físico en formato PDF o Excel.</p>
+          <h3><i data-lucide="folder-archive"></i> <span data-i18n="export_title">Historial de Rendimiento</span></h3>
+          <p class="export-desc" data-i18n="export_desc">Exporta tu historial de hábitos y estado físico en formato PDF o Excel.</p>
           <div class="export-buttons">
-            <button class="export-btn pdf" id="export-pdf-btn">
+            <button class="export-btn pdf" id="export-pdf-btn" data-i18n="export_pdf">
               <i data-lucide="file-text"></i> Exportar PDF
             </button>
-            <button class="export-btn csv" id="export-csv-btn">
+            <button class="export-btn csv" id="export-csv-btn" data-i18n="export_csv">
               <i data-lucide="file-spreadsheet"></i> Exportar CSV
             </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: PERFIL Y FOTOS -->
+      <section class="tab-content" id="tab-perfil">
+        <div class="stats-card">
+          <h3 class="stats-card-title"><i data-lucide="user"></i> <span data-i18n="profile_title">Perfil de Transformación</span></h3>
+          <div class="stats-row" style="margin-top: 15px;">
+            <div class="stat-box">
+              <span class="stat-number" id="profile-streak">0</span>
+              <span class="stat-desc" data-i18n="profile_streak">Racha Actual</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-number" id="profile-total-wins">0</span>
+              <span class="stat-desc" data-i18n="profile_total_wins">Wins Totales</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-number" id="profile-fast-restarts" style="color: var(--color-fail);">0</span>
+              <span class="stat-desc" data-i18n="profile_fast_restarts">Fast Restarts</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-card" style="margin-top: 20px;">
+          <h3 class="stats-card-title"><i data-lucide="activity"></i> <span data-i18n="chart_title">Rendimiento (Últimos 7 días)</span></h3>
+          <div style="position: relative; height: 180px; width: 100%; margin-top: 15px;">
+            <canvas id="profile-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="gallery-section">
+          <div class="gallery-header">
+            <h3><i data-lucide="image"></i> <span data-i18n="gallery_title">Galería Semanal</span></h3>
+            <button class="icon-btn" id="upload-photo-btn" title="Subir Foto">
+              <i data-lucide="camera"></i>
+            </button>
+            <input type="file" id="photo-upload-input" accept="image/png, image/jpeg, image/webp" style="display: none;">
+          </div>
+          <p class="export-desc" data-i18n="gallery_desc">Sube una foto cada semana para registrar tu cambio visual (Local).</p>
+          <div class="photo-grid" id="photo-grid">
+            <!-- Fotos inyectadas por JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: BIBLIOTECA -->
+      <section class="tab-content" id="tab-biblioteca">
+        <div class="section-header">
+          <h2 data-i18n="library_title">Biblioteca</h2>
+          <span class="badge-prevencion" data-i18n="library_badge">Conocimiento</span>
+        </div>
+        <p class="export-desc" style="margin-bottom: 20px;" data-i18n="library_desc">Lee e integra nuevos hábitos como tu 8va Meta Diaria.</p>
+        <div class="library-grid" id="library-grid">
+          <!-- Library cards injected via JS -->
+        </div>
+      </section>
+
+      <!-- TAB: ELITE (180 DAYS) -->
+      <section class="tab-content" id="tab-elite">
+        <!-- Locked State -->
+        <div id="elite-locked" class="elite-state-container">
+          <div class="elite-lock-icon">
+            <i data-lucide="lock"></i>
+          </div>
+          <h2 data-i18n="elite_locked_title">Nivel Clasificado</h2>
+          <p class="stats-message" style="font-size: 1.1rem; margin-top: 15px;" data-i18n="elite_locked_desc">Completa 180 días de transformación para desbloquear la Fase 2.</p>
+          <div class="elite-progress">
+            <span id="elite-days-remaining">0 / 180</span>
+          </div>
+        </div>
+
+        <!-- Unlocked State -->
+        <div id="elite-unlocked" class="elite-state-container" style="display: none;">
+          <div class="elite-lock-icon unlocked-glow">
+            <i data-lucide="crown"></i>
+          </div>
+          <h2 data-i18n="elite_unlocked_title" style="color: var(--color-maintain);">Estatus Élite Alcanzado</h2>
+          <p class="stats-message" style="margin-top: 15px;" data-i18n="elite_unlocked_desc">Has dominado tu biología y tu mente durante 180 días. Ahora comienza la Fase 2.</p>
+          
+          <div class="stats-card" style="margin-top: 30px; text-align: left;">
+            <h3 class="stats-card-title"><i data-lucide="award"></i> <span data-i18n="elite_stats_title">Resumen Semestral</span></h3>
+            <div class="stats-row" style="margin-top: 15px;">
+              <div class="stat-box">
+                <span class="stat-number" id="elite-total-wins" style="color: var(--color-win);">0</span>
+                <span class="stat-desc" data-i18n="elite_total_wins">Días Ganados</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-number" id="elite-avg-energy" style="color: var(--color-primary);">0</span>
+                <span class="stat-desc" data-i18n="elite_avg_energy">Energía Promedio</span>
+              </div>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;" data-i18n="elite_manifesto">
+              La disciplina ya no es algo que haces, es lo que eres. Mantén este estándar.
+            </p>
           </div>
         </div>
       </section>
@@ -190,11 +264,23 @@
     <nav class="app-nav">
       <button class="nav-item active" data-target="tab-hoy">
         <i data-lucide="check-square"></i>
-        <span>Hoy</span>
+        <span data-i18n="tab_today">Hoy</span>
       </button>
       <button class="nav-item" data-target="tab-progreso">
         <i data-lucide="calendar"></i>
-        <span>Progreso</span>
+        <span data-i18n="tab_progress">Progreso</span>
+      </button>
+      <button class="nav-item" data-target="tab-perfil">
+        <i data-lucide="user"></i>
+        <span data-i18n="tab_profile">Perfil</span>
+      </button>
+      <button class="nav-item" data-target="tab-biblioteca">
+        <i data-lucide="book-open"></i>
+        <span data-i18n="tab_library">Biblio</span>
+      </button>
+      <button class="nav-item elite-nav-btn" data-target="tab-elite" id="nav-elite">
+        <i data-lucide="lock" id="nav-elite-icon"></i>
+        <span data-i18n="tab_elite">Élite</span>
       </button>
     </nav>
   </div>
@@ -203,59 +289,67 @@
   <div class="modal-overlay" id="settings-modal">
     <div class="modal-card">
       <div class="modal-header">
-        <h2>Ajustar Metas Diarias</h2>
+        <h2 data-i18n="settings_title">Ajustar Metas Diarias</h2>
         <button class="icon-btn small" id="close-settings-btn">
           <i data-lucide="x"></i>
         </button>
       </div>
       <form class="modal-form" id="settings-form">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="app-language" data-i18n="language_label">Idioma / Language</label>
+          <select id="app-language" class="app-input" style="appearance: auto; padding-right: 30px;">
+            <option value="es">🇪🇸 Español</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="ru">🇷🇺 Русский</option>
+          </select>
+        </div>
         <div class="modal-form-grid">
           <div class="form-group">
-            <label for="goal-sleep-hours">Horas de Sueño</label>
+            <label for="goal-sleep-hours" data-i18n="sleep_hours">Horas de Sueño</label>
             <input type="number" id="goal-sleep-hours" min="1" max="24" step="0.5" class="app-input" value="7.5">
           </div>
           <div class="form-group">
-            <label for="goal-wake-time">Hora Despertar</label>
+            <label for="goal-wake-time" data-i18n="wake_time">Hora Despertar</label>
             <input type="text" id="goal-wake-time" class="app-input" value="10:00 AM">
           </div>
           <div class="form-group">
-            <label for="goal-calories">Kcal Diarias</label>
+            <label for="goal-calories" data-i18n="calories">Kcal Diarias</label>
             <input type="number" id="goal-calories" min="1000" max="6000" class="app-input" value="2200">
           </div>
           <div class="form-group">
-            <label for="goal-protein">Proteína (g)</label>
+            <label for="goal-protein" data-i18n="protein">Proteína (g)</label>
             <input type="number" id="goal-protein" min="50" max="300" class="app-input" value="170">
           </div>
           <div class="form-group">
-            <label for="goal-water">Litros Agua</label>
+            <label for="goal-water" data-i18n="water">Litros Agua</label>
             <input type="number" id="goal-water" min="1.0" max="10.0" step="0.05" class="app-input" value="3.15">
           </div>
           <div class="form-group">
-            <label for="goal-social-media">Redes (minutos)</label>
+            <label for="goal-social-media" data-i18n="social_media">Redes (minutos)</label>
             <input type="number" id="goal-social-media" min="5" max="300" class="app-input" value="30">
           </div>
           <div class="form-group">
-            <label for="goal-study-time">Estudio (minutos)</label>
+            <label for="goal-study-time" data-i18n="study_time">Estudio (minutos)</label>
             <input type="number" id="goal-study-time" min="5" max="300" class="app-input" value="30">
           </div>
           <div class="form-group">
-            <label for="goal-work-time">Deep Work (horas)</label>
+            <label for="goal-work-time" data-i18n="deep_work">Deep Work (horas)</label>
             <input type="number" id="goal-work-time" min="0.5" max="12" step="0.5" class="app-input" value="1">
           </div>
         </div>
-        <button type="submit" class="submit-btn" id="save-settings-btn-action">
+        <button type="submit" class="submit-btn" id="save-settings-btn-action" data-i18n="save_settings">
           Guardar Configuración
         </button>
       </form>
       
       <div class="backup-section">
-        <h3><i data-lucide="database"></i> Copia de Seguridad</h3>
-        <p class="backup-desc">Exporta o restaura tus datos manualmente para proteger tu progreso.</p>
+        <h3><i data-lucide="database"></i> <span data-i18n="backup_title">Copia de Seguridad</span></h3>
+        <p class="backup-desc" data-i18n="backup_desc">Exporta o restaura tus datos manualmente para proteger tu progreso.</p>
         <div class="backup-buttons">
-          <button class="backup-btn" id="export-backup-btn">
+          <button class="backup-btn" id="export-backup-btn" data-i18n="backup_export">
             <i data-lucide="download"></i> Exportar Backup (JSON)
           </button>
-          <button class="backup-btn" id="import-backup-btn">
+          <button class="backup-btn" id="import-backup-btn" data-i18n="backup_import">
             <i data-lucide="upload"></i> Importar Backup (JSON)
           </button>
           <input type="file" id="import-file-input" accept=".json" style="display: none;">
@@ -268,10 +362,15 @@
   <div class="modal-overlay" id="history-modal">
     <div class="modal-card">
       <div class="modal-header">
-        <h2 id="history-modal-title">Detalle del Día</h2>
-        <button class="icon-btn small" id="close-history-btn">
-          <i data-lucide="x"></i>
-        </button>
+        <h2 id="history-modal-title" data-i18n="history_title">Detalle del Día</h2>
+        <div style="display: flex; gap: 8px;">
+          <button class="icon-btn small" id="edit-history-btn" title="Editar este día" style="background: var(--surface-bg); color: var(--color-primary); border: 1px solid var(--color-primary);">
+            <i data-lucide="edit-2"></i>
+          </button>
+          <button class="icon-btn small" id="close-history-btn">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
       </div>
       <div class="history-modal-body">
         <div class="history-score-display" id="history-score-display">
@@ -280,29 +379,182 @@
         </div>
 
         <div class="history-section">
-          <h3>Misiones</h3>
+          <h3 data-i18n="history_missions">Misiones</h3>
           <ul class="history-list" id="history-missions-list">
             <!-- Populated via JS -->
           </ul>
         </div>
 
+        <div class="history-section" id="history-top-tasks-section" style="display: none;">
+          <h3 data-i18n="top_tasks_title">Top 3 Tareas</h3>
+          <ul class="history-list" id="history-top-tasks-list">
+            <!-- Populated via JS -->
+          </ul>
+        </div>
+
         <div class="history-section">
-          <h3>Estado de Rendimiento</h3>
+          <h3 data-i18n="history_somatic">Estado de Rendimiento</h3>
           <div class="history-somatic-grid">
             <div class="somatic-stat">
-              <span class="label">Energía</span>
+              <span class="label" data-i18n="history_energy">Energía</span>
               <span class="val" id="history-somatic-energy">-</span>
             </div>
             <div class="somatic-stat">
-              <span class="label">Estrés</span>
+              <span class="label" data-i18n="history_stress">Estrés</span>
               <span class="val" id="history-somatic-pain">-</span>
             </div>
           </div>
           <div class="somatic-notes-box">
-            <span class="label">Resumen del Día:</span>
+            <span class="label" data-i18n="history_summary">Resumen del Día:</span>
             <p id="history-somatic-notes">-</p>
           </div>
+          <div class="somatic-notes-box" id="history-crash-log-container" style="display: none; border-color: var(--color-fail-border); background: rgba(239, 68, 68, 0.05); margin-top: 10px;">
+            <span class="label" style="color: var(--color-fail);" data-i18n="crash_log_title">🔥 Crash Log (Fast Restart):</span>
+            <p id="history-crash-log-reason" style="margin-top: 5px; color: var(--text-main);">-</p>
+            <p id="history-crash-log-solution" style="margin-top: 5px; color: var(--color-maintain);">-</p>
+          </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REVISIÓN SEMANAL (DOMINGOS) -->
+  <div class="modal-overlay" id="weekly-review-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 data-i18n="weekly_review_title">Revisión Semanal</h2>
+        <button class="icon-btn small" id="close-weekly-btn">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body" style="padding-top: 10px;">
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;" data-i18n="weekly_review_desc">Análisis de tus últimos 7 días.</p>
+        
+        <div class="stats-row" style="margin-bottom: 20px;">
+          <div class="stat-box">
+            <span class="stat-number" id="weekly-avg-energy">-</span>
+            <span class="stat-desc" data-i18n="history_energy">Energía Promedio</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number" id="weekly-avg-stress">-</span>
+            <span class="stat-desc" data-i18n="history_stress">Estrés Promedio</span>
+          </div>
+        </div>
+
+        <div class="stats-card" style="margin-bottom: 20px;">
+          <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--text-primary);" data-i18n="weekly_ai_insight">💡 Análisis e Insights</h3>
+          <p id="weekly-insight-text" style="color: var(--color-primary); font-size: 0.9rem; line-height: 1.5;">Calculando...</p>
+        </div>
+        
+        <button class="submit-btn" id="weekly-review-ack-btn" data-i18n="weekly_ack_btn">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Day Modal -->
+  <div class="modal-overlay" id="end-day-modal">
+    <div class="modal-content end-day-content">
+      <div class="modal-header">
+        <h2 data-i18n="close_day_title">Cierre de Día</h2>
+        <button class="icon-btn close-modal-btn" id="close-end-day-modal-btn">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="somatic-form" id="somatic-form" onsubmit="event.preventDefault();">
+          <div class="form-group">
+            <div class="form-label-row">
+              <label for="energy-slider"><i data-lucide="zap"></i> <span data-i18n="energy_level">Nivel de Energía</span></label>
+              <span class="slider-value" id="energy-val">5</span>
+            </div>
+            <input type="range" id="energy-slider" min="1" max="10" value="5" class="app-slider">
+            <div class="slider-labels">
+              <span>1</span>
+              <span>10</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label-row">
+              <label for="pain-slider"><i data-lucide="shield-alert"></i> <span data-i18n="stress_level">Nivel de Estrés / Cansancio</span></label>
+              <span class="slider-value" id="pain-val">1</span>
+            </div>
+            <input type="range" id="pain-slider" min="1" max="10" value="1" class="app-slider">
+            <div class="slider-labels">
+              <span>1</span>
+              <span>10</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="medical-notes"><i data-lucide="book-open"></i> <span data-i18n="day_summary">Resumen del Día</span></label>
+            <textarea id="medical-notes" class="app-textarea" data-i18n="notes_placeholder" placeholder="Notas sobre tu día, productividad, sueño o alimentación..."></textarea>
+          </div>
+
+          <!-- Top 3 Tasks for Tomorrow -->
+          <div class="form-group top-tasks-input-group">
+            <label><i data-lucide="target"></i> <span data-i18n="tomorrow_tasks_title">Mis 3 Tareas de Mañana</span></label>
+            <p class="input-hint" data-i18n="tomorrow_tasks_hint">Define el trabajo profundo. Son obligatorias para ganar el próximo día.</p>
+            <input type="text" id="task-tomorrow-1" class="app-input" data-i18n-placeholder="task_1_placeholder" placeholder="Tarea 1 (El Cuello de Botella)">
+            <input type="text" id="task-tomorrow-2" class="app-input" data-i18n-placeholder="task_2_placeholder" placeholder="Tarea 2 (Secundaria)">
+            <input type="text" id="task-tomorrow-3" class="app-input" data-i18n-placeholder="task_3_placeholder" placeholder="Tarea 3 (Administrativa)">
+          </div>
+
+          <button type="button" class="submit-btn" id="save-somatic-btn" data-i18n="save_somatic_close">
+            <i data-lucide="check-circle-2"></i> Guardar y Dormir
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bonus Mission Modal -->
+  <div class="modal-overlay" id="bonus-mission-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 data-i18n="bonus_mission_title">Misión Bonus Aleatoria</h2>
+        <button class="icon-btn close-modal-btn" id="close-bonus-modal-btn">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body" style="text-align: center; padding: 20px 0;">
+        <i data-lucide="dices" style="width: 48px; height: 48px; color: var(--color-primary); margin-bottom: 16px;"></i>
+        <h3 id="bonus-mission-text" style="font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">Cargando misión...</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px;">Esta misión es voluntaria. Puedes aceptarla para obtener un Extra Win, rechazarla sin penalización, o cambiarla una sola vez.</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <button type="button" class="submit-btn" id="accept-bonus-btn" style="background: var(--color-primary); color: #000;">
+            <i data-lucide="check"></i> Aceptar Reto
+          </button>
+          <button type="button" class="submit-btn" id="reroll-bonus-btn" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-default);">
+            <i data-lucide="refresh-cw"></i> Cambiar Misión (1 restante)
+          </button>
+          <button type="button" class="submit-btn" id="reject-bonus-btn" style="background: transparent; color: var(--text-muted); border: none; box-shadow: none;">
+            Rechazar por hoy
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Journal Modal -->
+  <div class="modal-overlay" id="quick-journal-modal">
+    <div class="modal-content end-day-content" style="height: 60vh; margin-top: 40vh;">
+      <div class="modal-header">
+        <h2>Diario Rápido</h2>
+        <button class="icon-btn close-modal-btn" id="close-quick-journal-btn">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="quick-notes"><i data-lucide="book-open"></i> Brain Dump</label>
+          <p class="input-hint">Apunta ideas, reflexiones o aprendizajes. Se guardarán en tus notas del día.</p>
+          <textarea id="quick-notes" class="app-textarea" style="height: 200px;" placeholder="¿Qué tienes en mente?..."></textarea>
+        </div>
+        <button type="button" class="submit-btn" id="save-quick-journal-btn">
+          <i data-lucide="save"></i> Guardar Notas
+        </button>
       </div>
     </div>
   </div>
@@ -310,6 +562,9 @@
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <!-- jsPDF & jsPDF AutoTable CDN for PDF Exports -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>

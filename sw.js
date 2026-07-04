@@ -1,4 +1,4 @@
-const CACHE_NAME = 'daily-win-os-cache-v2';
+const CACHE_NAME = 'daily-win-os-cache-v17';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
